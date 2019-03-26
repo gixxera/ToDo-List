@@ -1,19 +1,22 @@
-let todos = [
-  {
-    id: Math.floor(Math.random(10) * 1000),
-    text: "Do work",
-    completed: false
-  },
-  {
-    id: Math.floor(Math.random(10) * 1000),
-    text: "Exercise",
-    completed: false
-  }
-];
+let todos = getSavedTodos();
 
 const filters = {
   searchText: ""
 };
+
+function getSavedTodos() {
+  const todosJSON = localStorage.getItem("todos");
+
+  if (todosJSON !== null) {
+    return JSON.parse(todosJSON);
+  } else {
+    return [];
+  }
+}
+
+function saveTodos(todos) {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
 
 const renderTodos = function(todos, filters) {
   const filteredTodos = todos.filter(function(todo) {
@@ -76,6 +79,7 @@ function removeTodo(id) {
   for (let index = 0; index < todos.length; index++) {
     if (todos[index].id == id) {
       todos.splice(index, 1);
+      localStorage.removeItem("todos");
     }
   }
 }
@@ -104,10 +108,13 @@ addBtn.addEventListener("click", function(e) {
   }
   renderTodos(todos, filters);
   todoInput.value = "";
+
+  saveTodos(todos);
 });
 
 delBtn.addEventListener("click", function(e) {
   e.preventDefault();
   todos = [];
+  localStorage.clear();
   renderTodos(todos, filters);
 });
